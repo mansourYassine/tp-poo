@@ -29,26 +29,31 @@ class Commande:
         Commande.nbre_commande += 1
         self.num_commande = Commande.nbre_commande
         self.statut = statut
-        self.produits = []
+        self.listeProduits = []
     
     def ajouter_produit(self, produit, quantite=1):
-        if quantite == 1:
-            self.produits.append((produit, 1))
-        elif quantite >= 0 and quantite != 1:
-            self.produits.append((produit, quantite))
-        else:
-            print("Error")
+        if quantite >= 1:
+            is_existe = False
+            for elm in self.listeProduits:
+                if elm[0] == produit:
+                    elm[1] += quantite
+                    is_existe = True
+            if is_existe == False:
+                self.listeProduits.append([produit, quantite])
     
     def calculer_total(self):
         prix_total = 0
-        for produit in self.produits:
-            prix_total += produit[0].prix * produit[1]
-        
+        for elm in self.listeProduits:
+            prix_total += elm[0].prix * elm[1]
+
         return prix_total
 
     def afficher_details(self):
-        for produit in self.produits:
-            print(f"{produit[0].afficher_details()}, Quantity: {produit[1]}")
+        print(f"Commande N°{self.num_commande}:")
+        for elm in self.listeProduits:
+            print(f"{elm[0].nom} : {elm[1]}")
+        print(f"Prix Total: {self.calculer_total()}")
+        print("================")
 
 class CommandeExpress(Commande):
     def calculer_total(self):
@@ -56,25 +61,28 @@ class CommandeExpress(Commande):
         return super().calculer_total() + frais_livraison
     
     def afficher_details(self):
-        print("Une commande express:")
+        print("Commande express ", end="")
         super().afficher_details()
-    
+
+
 if __name__ == "__main__":
     p1 = Produit("Genova", 3)
     p2 = Produit("Merandina", 20)
     p3 = Produit("Tonic", 1)
+    p4 = Produit("Chocop", 2)
 
     c1 = Commande()
     c1.ajouter_produit(p1, 50)
     c1.ajouter_produit(p2, 5)
     c1.ajouter_produit(p3)
-
+    c1.ajouter_produit(p3, 20)
+    c1.ajouter_produit(p2, 10)
+    c1.ajouter_produit(p4, 4)
+    c1.ajouter_produit(p4, 2)
     c1.afficher_details()
-    print(f"Le prix Total de commande: {c1.calculer_total()}")
 
     c2 = CommandeExpress()
     c2.ajouter_produit(p1, 50)
     c2.ajouter_produit(p2, 5)
     c2.ajouter_produit(p3)
     c2.afficher_details()
-    print(f"Le prix Total de commande: {c2.calculer_total()}")
